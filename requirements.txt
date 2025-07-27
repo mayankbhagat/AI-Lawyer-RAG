@@ -1,11 +1,12 @@
 streamlit
 langchain
 langchain-groq
-langchain-community # <--- Add this line
-langchain-text-splitters # <--- Add this line if not already there
-langchain-ollama # <--- Add this line if not already there
+langchain-community
+langchain-text-splitters
+langchain-ollama
 pydantic
 python-dotenv
 faiss-cpu
 sentence-transformers
-pypdf
+pdfplumber
+tiktoken
