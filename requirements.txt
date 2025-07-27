@@ -3,8 +3,7 @@ langchain
 langchain-groq
 langchain-community
 langchain-text-splitters
-# Ensure this is not present: langchain-ollama
-langchain-openai # <--- Make sure this line is present
+langchain-ollama
 pydantic
 python-dotenv
 faiss-cpu
