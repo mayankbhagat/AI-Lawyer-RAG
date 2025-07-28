@@ -1,15 +1,12 @@
-# REMOVED: from langchain_groq import ChatGroq
-# ADDED:
+# rag_pipeline.py
 from langchain_google_genai import ChatGoogleGenerativeAI
 from vector_database import faiss_db
 from langchain_core.prompts import ChatPromptTemplate
 from dotenv import load_dotenv
 load_dotenv()
 
-# Initialize the Google Gemini LLM
-# 'gemini-pro' is a powerful, general-purpose model suitable for chat and text generation.
-# It automatically uses the GOOGLE_API_KEY environment variable.
-llm_model = ChatGoogleGenerativeAI(model="gemini-pro")
+# Change this line:
+llm_model = ChatGoogleGenerativeAI(model="gemini-2.5-pro") # Or "gemini-1.5-pro-latest" or "gemini-1.5-flash-latest"
 
 
 def retrieve_docs(query):
