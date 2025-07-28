@@ -1,12 +1,11 @@
 streamlit
 langchain
-langchain-groq
+langchain-google-genai # NEW: For Gemini LLM and Embeddings
 langchain-community
 langchain-text-splitters
-langchain-ollama
 pydantic
 python-dotenv
 faiss-cpu
-sentence-transformers
+sentence-transformers # Keep this for general utility/sub-dependency reasons
 pdfplumber
 tiktoken
