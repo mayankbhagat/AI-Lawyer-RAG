@@ -13,7 +13,7 @@ from vector_database import faiss_db # Re-use your FAISS DB (which loads documen
 
 # Define the LLM and Prompt template again for the evaluation context
 # Use the same model as in rag_pipeline.py
-llm_model = ChatGoogleGenerativeAI(model="gemini-pro") # Changed to Gemini Pro
+llm_model = ChatGoogleGenerativeAI(model="gemini-2.5-pro") # Changed to Gemini Pro
 
 # The prompt template should be consistent with what your LLM expects
 template = """
