@@ -1,11 +1,24 @@
+import asyncio # Import asyncio at the absolute top of the file
 import streamlit as st
 import time
-import os # Import os for path handling
-import shutil # For deleting directories
+import os
+import shutil
 
-# Import components from your rag_pipeline and vector_database
+# --- START ASYNCIO EVENT LOOP FIX ---
+# This block MUST come before ANY other imports or code that might trigger async operations
+try:
+    _loop = asyncio.get_running_loop()
+except RuntimeError:
+    _loop = None
+
+if _loop and _loop.is_running():
+    pass
+else:
+    asyncio.set_event_loop(asyncio.new_event_loop())
+# --- END ASYNCIO EVENT LOOP FIX ---
+
+# Now import your project-specific modules
 from rag_pipeline import answer_query, retrieve_docs, llm_model
-# Import relevant functions, but not faiss_db directly here
 from vector_database import load_pdf, create_chunks, get_embeddings, FAISS_DB_PATH
 from langchain_community.vectorstores import FAISS # Import FAISS for its load/from_documents methods
 
