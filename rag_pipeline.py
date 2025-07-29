@@ -1,16 +1,15 @@
-# rag_pipeline.py
+import os
 from langchain_google_genai import ChatGoogleGenerativeAI
-from vector_database import faiss_db
+# REMOVED: from vector_database import faiss_db # No longer import faiss_db directly
 from langchain_core.prompts import ChatPromptTemplate
 from dotenv import load_dotenv
 load_dotenv()
 
-# Change this line:
-llm_model = ChatGoogleGenerativeAI(model="gemini-2.5-pro") # Or "gemini-1.5-pro-latest" or "gemini-1.5-flash-latest"
+llm_model = ChatGoogleGenerativeAI(model="gemini-2.5-pro")
 
-
-def retrieve_docs(query):
-    return faiss_db.similarity_search(query)
+# MODIFIED: retrieve_docs now accepts 'db_to_use'
+def retrieve_docs(query, db_to_use):
+    return db_to_use.similarity_search(query)
 
 def get_context(documents):
     context = "\n\n".join([doc.page_content for doc in documents])

@@ -1,45 +1,42 @@
 import os
-import asyncio # Make sure asyncio is imported at the very top
-from dotenv import load_dotenv # Also load dotenv early
+import asyncio
+from dotenv import load_dotenv
 
 # --- START ASYNCIO EVENT LOOP FIX ---
-# This block MUST come before any imports that might trigger async operations (like langchain_google_genai)
 try:
     _loop = asyncio.get_running_loop()
 except RuntimeError:
     _loop = None
 
 if _loop and _loop.is_running():
-    # If a loop is already running, use it.
     pass
 else:
-    # If no loop is running or it's closed, set a new event loop.
     asyncio.set_event_loop(asyncio.new_event_loop())
-# --- END ASYNCIO EVENT LOOP FIX ---
+# --- END ADDED LINES ---
 
-# Now import your libraries
 from langchain_community.document_loaders import PDFPlumberLoader
 from langchain_core import documents
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-from langchain_google_genai import GoogleGenerativeAIEmbeddings # This import needs loop to be ready
-from langchain_community.vectorstores import FAISS
+from langchain_google_genai import GoogleGenerativeAIEmbeddings
+from langchain_community.vectorstores import FAISS # Still import FAISS for type hinting/utility
 
+load_dotenv()
 
-load_dotenv() # Load your environment variables from .env
-
-pdfs_directory = 'pdfs/'
+pdfs_directory = 'pdfs/' # Make sure this directory exists for saving uploaded PDFs temporarily
 
 def upload_pdf(file):
-    with open(pdfs_directory + file.name, 'wb') as f:
-        f.write(f.getbuffer())
+    # This function is now used by frontend to save the uploaded file
+    # It ensures the 'pdfs/' directory exists.
+    os.makedirs(pdfs_directory, exist_ok=True)
+    file_path = os.path.join(pdfs_directory, file.name)
+    with open(file_path, 'wb') as f:
+        f.write(file.getbuffer())
+    return file_path
 
 def load_pdf(file_path):
     loader = PDFPlumberLoader(file_path)
     documents = loader.load()
     return documents
-
-file_path='UDHR.pdf'
-documents = load_pdf(file_path)
 
 def create_chunks(documents):
     text_splitter = RecursiveCharacterTextSplitter(
@@ -49,20 +46,11 @@ def create_chunks(documents):
     )
     text_chunks = text_splitter.split_documents(documents)
     return text_chunks
-text_chunks = create_chunks(documents)
 
 def get_embeddings():
     embeddings = GoogleGenerativeAIEmbeddings(model="embedding-001")
     return embeddings
 
-FAISS_DB_PATH="vectorstore/db_faiss"
-
-# Check if the FAISS DB already exists to avoid re-embedding on every run
-if os.path.exists(FAISS_DB_PATH):
-    print("Loading existing FAISS DB...")
-    faiss_db = FAISS.load_local(FAISS_DB_PATH, get_embeddings(), allow_dangerous_deserialization=True)
-else:
-    print("Creating new FAISS DB...")
-    faiss_db = FAISS.from_documents(text_chunks, get_embeddings())
-    faiss_db.save_local(FAISS_DB_PATH)
-    print("FAISS DB created and saved.")
+FAISS_DB_PATH="vectorstore/db_faiss" # Keep this constant for consistent path
+# REMOVED: Direct creation/loading of faiss_db at the module level.
+# This logic is now in frontend.py.

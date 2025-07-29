@@ -4,16 +4,16 @@ from dotenv import load_dotenv
 load_dotenv() # Load your GOOGLE_API_KEY for local execution
 
 # Import components from your existing RAG pipeline
-from rag_pipeline import retrieve_docs
-# REMOVED: from langchain_groq import ChatGroq
-# ADDED:
+# MODIFIED: We no longer import faiss_db directly from vector_database
+from rag_pipeline import retrieve_docs as _retrieve_docs_internal # Rename to avoid conflict if needed later
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.prompts import ChatPromptTemplate
-from vector_database import faiss_db # Re-use your FAISS DB (which loads documents and creates chunks)
+# ADDED: Import from vector_database for DB loading
+from vector_database import get_embeddings, FAISS_DB_PATH, load_pdf, create_chunks
+from langchain_community.vectorstores import FAISS # Import FAISS for load_local
 
 # Define the LLM and Prompt template again for the evaluation context
-# Use the same model as in rag_pipeline.py
-llm_model = ChatGoogleGenerativeAI(model="gemini-2.5-pro") # Changed to Gemini Pro
+llm_model = ChatGoogleGenerativeAI(model="gemini-2.5-pro")
 
 # The prompt template should be consistent with what your LLM expects
 template = """
@@ -54,6 +54,28 @@ eval_questions = [
     }
 ]
 
+# --- Load or Create FAISS DB for Evaluation ---
+# This ensures eval_rag.py has access to the DB, which might have been created by frontend.py
+print("Loading FAISS DB for evaluation...")
+if not os.path.exists(FAISS_DB_PATH):
+    print(f"Warning: FAISS DB not found at {FAISS_DB_PATH}. It might not have been created by frontend.py yet.")
+    # Optionally, you could add logic here to create it from UDHR.pdf if it's consistently the source.
+    # For a dynamic app, assume frontend handles it, or prompt user.
+    print("Attempting to create a default DB from UDHR.pdf for evaluation...")
+    documents = load_pdf('UDHR.pdf') # Fallback to UDHR.pdf for evaluation if no other DB exists
+    text_chunks = create_chunks(documents)
+    eval_faiss_db = FAISS.from_documents(text_chunks, get_embeddings())
+    eval_faiss_db.save_local(FAISS_DB_PATH) # Save it for future eval runs
+    print("Default FAISS DB created from UDHR.pdf for evaluation.")
+else:
+    eval_faiss_db = FAISS.load_local(FAISS_DB_PATH, get_embeddings(), allow_dangerous_deserialization=True)
+print("FAISS DB loaded for evaluation.")
+
+# Modified retrieve_docs for evaluation context
+def retrieve_docs_for_eval(query):
+    return eval_faiss_db.similarity_search(query)
+
+
 def generate_answer_for_eval(question, retrieved_docs_content):
     formatted_prompt = prompt_template.format(context=retrieved_docs_content, question=question)
     response = llm_model.invoke(formatted_prompt)
@@ -72,8 +94,8 @@ for i, data in enumerate(eval_questions):
     print(f"Question: {question}")
     print(f"Ground Truth: {ground_truth}")
 
-    # 1. Retrieve documents
-    retrieved_docs = retrieve_docs(question)
+    # 1. Retrieve documents using the eval-specific retrieve_docs
+    retrieved_docs = retrieve_docs_for_eval(question) # Use the eval-specific retrieve_docs
     retrieved_content = "\n\n".join([doc.page_content for doc in retrieved_docs])
 
     # Basic check for context relevance (simple keyword presence)
