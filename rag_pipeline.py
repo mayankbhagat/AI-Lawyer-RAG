@@ -5,7 +5,7 @@ from langchain_core.prompts import ChatPromptTemplate
 from dotenv import load_dotenv
 load_dotenv()
 
-llm_model = ChatGoogleGenerativeAI(model="gemini-1.5-flash")
+llm_model = ChatGoogleGenerativeAI(model="gemini-pro")
 
 # MODIFIED: retrieve_docs now accepts 'db_to_use'
 def retrieve_docs(query, db_to_use):
