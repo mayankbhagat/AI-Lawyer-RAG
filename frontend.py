@@ -4,8 +4,27 @@ import time
 import os
 import shutil
 
+# --- 1. ASYNCIO FIX ---
+try:
+    _loop = asyncio.get_running_loop()
+except RuntimeError:
+    _loop = None
+
+if _loop and _loop.is_running():
+    pass
+else:
+    asyncio.set_event_loop(asyncio.new_event_loop())
+
+# --- 2. BRIDGE SECRETS TO ENVIRONMENT (CRITICAL FIX) ---
+# This allows LangChain to "see" the key you put in the Secrets tab
 if "GOOGLE_API_KEY" in st.secrets:
     os.environ["GOOGLE_API_KEY"] = st.secrets["GOOGLE_API_KEY"]
+
+# --- 3. PROJECT IMPORTS ---
+# These must come AFTER the bridge code above
+from rag_pipeline import answer_query, retrieve_docs, llm_model
+from vector_database import load_pdf, create_chunks, get_embeddings, FAISS_DB_PATH
+from langchain_community.vectorstores import FAISS
 # --- START ASYNCIO EVENT LOOP FIX ---
 # This block MUST come before ANY other imports or code that might trigger async operations
 try:
