@@ -40,15 +40,15 @@ def load_pdf(file_path):
 
 def create_chunks(documents):
     text_splitter = RecursiveCharacterTextSplitter(
-        chunk_size=1000,
-        chunk_overlap=200,
+        chunk_size=4000,
+        chunk_overlap=500,
         add_start_index=True
     )
     text_chunks = text_splitter.split_documents(documents)
     return text_chunks
 
 def get_embeddings():
-    embeddings = GoogleGenerativeAIEmbeddings(model="embedding-001")
+    embeddings = GoogleGenerativeAIEmbeddings(model="models/text-embedding-004")
     return embeddings
 
 FAISS_DB_PATH="vectorstore/db_faiss" # Keep this constant for consistent path
