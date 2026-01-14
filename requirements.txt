@@ -1,6 +1,6 @@
 streamlit
 langchain
-langchain-google-genai # NEW: For Gemini LLM and Embeddings
+langchain-google-genai>=1.0.6 # NEW: For Gemini LLM and Embeddings
 langchain-community
 langchain-text-splitters
 pydantic
