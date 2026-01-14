@@ -1,11 +1,13 @@
 streamlit
 langchain
-langchain-google-genai>=1.0.6 # NEW: For Gemini LLM and Embeddings
 langchain-community
 langchain-text-splitters
 pydantic
 python-dotenv
 faiss-cpu
-sentence-transformers # Keep this for general utility/sub-dependency reasons
+sentence-transformers
 pdfplumber
 tiktoken
+# CRITICAL UPDATES:
+langchain-google-genai>=1.0.6
+google-generativeai>=0.7.0
