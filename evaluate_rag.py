@@ -13,7 +13,7 @@ from vector_database import get_embeddings, FAISS_DB_PATH, load_pdf, create_chun
 from langchain_community.vectorstores import FAISS # Import FAISS for load_local
 
 # Define the LLM and Prompt template again for the evaluation context
-llm_model = ChatGoogleGenerativeAI(model="gemini-2.0-flash")
+llm_model = ChatGoogleGenerativeAI(model="models/gemini-flash-latest")
 
 # The prompt template should be consistent with what your LLM expects
 template = """

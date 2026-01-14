@@ -48,7 +48,7 @@ def create_chunks(documents):
     return text_chunks
 
 def get_embeddings():
-    embeddings = GoogleGenerativeAIEmbeddings(model="models/text-embedding-004")
+    embeddings = GoogleGenerativeAIEmbeddings(model="models/gemini-embedding-001")
     return embeddings
 
 FAISS_DB_PATH="vectorstore/db_faiss" # Keep this constant for consistent path
