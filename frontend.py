@@ -4,6 +4,8 @@ import time
 import os
 import shutil
 
+if "GOOGLE_API_KEY" in st.secrets:
+    os.environ["GOOGLE_API_KEY"] = st.secrets["GOOGLE_API_KEY"]
 # --- START ASYNCIO EVENT LOOP FIX ---
 # This block MUST come before ANY other imports or code that might trigger async operations
 try:
